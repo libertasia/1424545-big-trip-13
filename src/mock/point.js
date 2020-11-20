@@ -1,0 +1,91 @@
+import {getRandomInteger} from "../utils.js";
+import {POINT_TYPES} from "../const.js";
+
+const MIN_OFFERS_COUNT = 0;
+const MAX_OFFERS_COUNT = 5;
+const MIN_PRICE = 10;
+const MAX_PRICE = 10000;
+const OFFER_TITLES = [`Add luggage`, `Switch to comfort`, `Add meal`, `Choose seats`, `Travel by train`];
+const OFFER_PRICES = [20, 30, 40, 50, 10];
+const DESCRIPTIONS = [
+`Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+`Cras aliquet varius magna, non porta ligula feugiat eget.`,
+`Fusce tristique felis at fermentum pharetra.`,
+`Aliquam id orci ut lectus varius viverra.`,
+`Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
+`Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
+`Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
+`Sed sed nisi sed augue convallis suscipit in sed felis.`,
+`Aliquam erat volutpat.`,
+`Nunc fermentum tortor ac porta dapibus.`,
+`In rutrum ac purus sit amet tempus.`
+];
+const DESTINATIONS = [
+  `Helsinki`,
+  `Geneva`,
+  `Berlin`,
+  `Hamburg`,
+  `Paris`,
+  `London`,
+  `Lisboa`,
+  `Madrid`,
+  `Palermo`,
+  `Catania`
+];
+
+const isPropertyValueUsed = (propertyName, propertyValue, objArray) => {
+  for (let i = 0; i < objArray.length; i++) {
+    if (propertyValue === objArray[i][propertyName]) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const getRandomArrayElement = (arr) => {
+  const randomIndex = getRandomInteger(0, arr.length - 1);
+
+  return arr[randomIndex];
+};
+
+const generateOffers = (count) => {
+  const offers = [];
+  let title = ``;
+  let price = ``;
+  for (let i = 0; i < count; i++) {
+    do {
+      title = OFFER_TITLES[getRandomInteger(0, OFFER_TITLES.length - 1)];
+    }
+    while (isPropertyValueUsed(`title`, title, offers));
+
+    do {
+      price = OFFER_PRICES[getRandomInteger(0, OFFER_PRICES.length - 1)];
+    }
+    while (isPropertyValueUsed(`price`, price, offers));
+
+    offers.push({
+      type: getRandomArrayElement(POINT_TYPES),
+      title,
+      price
+    });
+  }
+  return offers;
+};
+
+const generatePoint = () => {
+  return {
+    type: getRandomArrayElement(POINT_TYPES),
+    destination: getRandomArrayElement(DESTINATIONS),
+    offers: generateOffers(getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    info: {
+      description: getRandomArrayElement(DESCRIPTIONS),
+      photo: `http://picsum.photos/248/152?r=${Math.random()}`
+    },
+    price: getRandomInteger(MIN_PRICE, MAX_PRICE),
+    startTime:,
+    endTime:,
+    isFavorite: false
+  };
+};
+
+export {generatePoint};
