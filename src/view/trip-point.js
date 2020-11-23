@@ -1,22 +1,41 @@
-const createTripPointTemplate = () => {
+import dayjs from "dayjs";
+
+const HOUR_IN_MINUTES = 60;
+const DAY_IN_MINUTES = 1440;
+
+const createTripPointTemplate = (point) => {
+  const {type, destination, price, startTime, endTime} = point;
+
+  const date = dayjs(startTime).format(`MMM D`);
+  const eventStartTime = dayjs(startTime).format(`HH:mm`);
+  const eventEndTime = dayjs(endTime).format(`HH:mm`);
+
+  // const getEventDuration = () => {
+  //   let timeDiff = endTime.diff(startTime, `minute`);
+  //   if (timeDiff < HOUR_IN_MINUTES) {
+  //     timeDiff = dayjs(timeDiff).format(`mm`);
+  //     return `${timeDiff}M`;
+  //   } else if (timeDiff >)
+  // }; остановилась здесь
+
   return `
     <li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="2019-03-19">MAR 19</time>
+        <time class="event__date" datetime="${startTime.toISOString()}">${date}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/flight.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">Flight Geneva</h3>
+        <h3 class="event__title">${type} ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-19T18:00">18:00</time>
+            <time class="event__start-time" datetime="${startTime.toISOString()}">${eventStartTime}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-19T19:00">19:00</time>
+            <time class="event__end-time" datetime="${endTime.toISOString()}">${eventEndTime}</time>
           </p>
           <p class="event__duration">1H</p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">20</span>
+          &euro;&nbsp;<span class="event__price-value">${price}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">

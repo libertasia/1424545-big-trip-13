@@ -1,5 +1,6 @@
 import {getRandomInteger} from "../utils.js";
 import {POINT_TYPES} from "../const.js";
+import dayjs from "dayjs";
 
 const MIN_OFFERS_COUNT = 0;
 const MAX_OFFERS_COUNT = 5;
@@ -72,7 +73,21 @@ const generateOffers = (count) => {
   return offers;
 };
 
+const getRandomDate = () => {
+  const minYear = 2019;
+  const maxYear = 2021;
+  const year = getRandomInteger(minYear, maxYear);
+  const month = getRandomInteger(0, 11);
+  const day = getRandomInteger(1, 28);
+  const hour = getRandomInteger(0, 23);
+  const minute = getRandomInteger(0, 59);
+  const date = new Date(year, month, day, hour, minute);
+  return dayjs(date);
+};
+
 const generatePoint = () => {
+  const startTime = getRandomDate();
+  let endTime = startTime.add(getRandomInteger(1, 12), `hour`);
   return {
     type: getRandomArrayElement(POINT_TYPES),
     destination: getRandomArrayElement(DESTINATIONS),
@@ -82,9 +97,9 @@ const generatePoint = () => {
       photo: `http://picsum.photos/248/152?r=${Math.random()}`
     },
     price: getRandomInteger(MIN_PRICE, MAX_PRICE),
-    startTime:,
-    endTime:,
-    isFavorite: false
+    startTime,
+    endTime,
+    isFavorite: Boolean(getRandomInteger(0, 1))
   };
 };
 
