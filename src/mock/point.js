@@ -87,7 +87,9 @@ const getRandomDate = () => {
 
 const generatePoint = () => {
   const startTime = getRandomDate();
-  let endTime = startTime.add(getRandomInteger(1, 12), `hour`);
+  let endTime = startTime.add(getRandomInteger(0, 24), `hour`);
+  endTime = endTime.add(getRandomInteger(0, 59), `minute`);
+  endTime = endTime.add(getRandomInteger(0, 59), `second`);
   return {
     type: getRandomArrayElement(POINT_TYPES),
     destination: getRandomArrayElement(DESTINATIONS),
