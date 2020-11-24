@@ -28,9 +28,9 @@ render(tripEventsSection, createTripListTemplate(), `beforeend`);
 
 const tripList = tripEventsSection.querySelector(`.trip-events__list`);
 
-render(tripList, createEditPointTemplate(), `afterbegin`);
+render(tripList, createEditPointTemplate(points[0]), `afterbegin`);
 render(tripList, createNewPointTemplate(), `beforeend`);
 
-for (let i = 0; i < POINT_COUNT; i++) {
+for (let i = 1; i < POINT_COUNT; i++) {
   render(tripList, createTripPointTemplate(points[i]), `beforeend`);
 }

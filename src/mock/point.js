@@ -6,7 +6,7 @@ const MIN_OFFERS_COUNT = 0;
 const MAX_OFFERS_COUNT = 5;
 const MIN_PRICE = 10;
 const MAX_PRICE = 10000;
-const OFFER_TITLES = [`Add luggage`, `Switch to comfort`, `Add meal`, `Choose seats`, `Travel by train`];
+const OFFER_TITLES = [`Add luggage`, `Switch to comfort`, `Add meal`, `Choose seats`, `Travel by train`, `Rent a car`, `Order Uber`, `Add breakfast`];
 const OFFER_PRICES = [20, 30, 40, 50, 10];
 const DESCRIPTIONS = [
 `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
