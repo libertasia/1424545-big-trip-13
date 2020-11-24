@@ -3,30 +3,30 @@ import dayjs from "dayjs";
 const MINUTES_PER_HOUR = 60;
 const MINUTES_PER_DAY = 1440;
 
+const zeroPad = (num, places) => String(num).padStart(places, `0`);
+
+const getEventDuration = (startTime, endTime) => {
+  const durationInMinutes = endTime.diff(startTime, `minute`);
+  if (durationInMinutes < MINUTES_PER_HOUR) {
+    return `${zeroPad(durationInMinutes, 2)}M`;
+  } else if (durationInMinutes < MINUTES_PER_DAY) {
+    const hours = Math.floor(durationInMinutes / MINUTES_PER_HOUR);
+    const minutes = durationInMinutes % MINUTES_PER_HOUR;
+    return `${zeroPad(hours, 2)}H ${zeroPad(minutes, 2)}M`;
+  } else {
+    const days = Math.floor(durationInMinutes / MINUTES_PER_DAY);
+    const hours = Math.floor((durationInMinutes - days * MINUTES_PER_DAY) / MINUTES_PER_HOUR);
+    const minutes = durationInMinutes - days * MINUTES_PER_DAY - hours * MINUTES_PER_HOUR;
+    return `${zeroPad(days, 2)}D ${zeroPad(hours, 2)}H ${zeroPad(minutes, 2)}M`;
+  }
+};
+
 const createTripPointTemplate = (point) => {
   const {type, destination, price, startTime, endTime, offers, isFavorite} = point;
 
   const date = dayjs(startTime).format(`MMM D`);
   const eventStartTime = dayjs(startTime).format(`HH:mm`);
   const eventEndTime = dayjs(endTime).format(`HH:mm`);
-
-  const zeroPad = (num, places) => String(num).padStart(places, `0`);
-
-  const getEventDuration = () => {
-    const durationInMinutes = endTime.diff(startTime, `minute`);
-    if (durationInMinutes < MINUTES_PER_HOUR) {
-      return `${zeroPad(durationInMinutes, 2)}M`;
-    } else if (durationInMinutes < MINUTES_PER_DAY) {
-      const hours = Math.floor(durationInMinutes / MINUTES_PER_HOUR);
-      const minutes = durationInMinutes % MINUTES_PER_HOUR;
-      return `${zeroPad(hours, 2)}H ${zeroPad(minutes, 2)}M`;
-    } else {
-      const days = Math.floor(durationInMinutes / MINUTES_PER_DAY);
-      const hours = Math.floor((durationInMinutes - days * MINUTES_PER_DAY) / MINUTES_PER_HOUR);
-      const minutes = durationInMinutes - days * MINUTES_PER_DAY - hours * MINUTES_PER_HOUR;
-      return `${zeroPad(days, 2)}D ${zeroPad(hours, 2)}H ${zeroPad(minutes, 2)}M`;
-    }
-  };
 
   const createOfferTemplate = (offer) => {
     return `
@@ -60,7 +60,7 @@ const createTripPointTemplate = (point) => {
             &mdash;
             <time class="event__end-time" datetime="${endTime.toISOString()}">${eventEndTime}</time>
           </p>
-          <p class="event__duration">${getEventDuration()}</p>
+          <p class="event__duration">${getEventDuration(startTime, endTime)}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${price}</span>
