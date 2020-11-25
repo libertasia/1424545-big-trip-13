@@ -8,7 +8,6 @@ const MIN_PRICE = 10;
 const MAX_PRICE = 10000;
 const MIN_PHOTOS_COUNT = 1;
 const MAX_PHOTOS_COUNT = 6;
-// const OFFER_TITLES = [`Add luggage`, `Switch to comfort`, `Add meal`, `Choose seats`, `Travel by train`, `Rent a car`, `Order Uber`, `Add breakfast`];
 const OFFER_PRICES = [20, 30, 40, 50, 10];
 let OFFERS = [];
 
@@ -53,44 +52,11 @@ const generateMockOffers = () => {
   return offers;
 };
 
-// const isPropertyValueUsed = (propertyName, propertyValue, objArray) => {
-//   for (let i = 0; i < objArray.length; i++) {
-//     if (propertyValue === objArray[i][propertyName]) {
-//       return true;
-//     }
-//   }
-//   return false;
-// };
-
 const getRandomArrayElement = (arr) => {
   const randomIndex = getRandomInteger(0, arr.length - 1);
 
   return arr[randomIndex];
 };
-
-// const generateOffers = (count, pointType) => {
-//   const offers = [];
-//   let title = ``;
-//   let price = ``;
-//   for (let i = 0; i < count; i++) {
-//     do {
-//       title = OFFER_TITLES[getRandomInteger(0, OFFER_TITLES.length - 1)];
-//     }
-//     while (isPropertyValueUsed(`title`, title, offers));
-
-//     do {
-//       price = OFFER_PRICES[getRandomInteger(0, OFFER_PRICES.length - 1)];
-//     }
-//     while (isPropertyValueUsed(`price`, price, offers));
-
-//     offers.push({
-//       type: pointType,
-//       title,
-//       price
-//     });
-//   }
-//   return offers;
-// };
 
 const generatePhotos = (count) => {
   const photos = [];
@@ -123,7 +89,6 @@ const generatePoint = () => {
   return {
     type: pointType,
     destination: getRandomArrayElement(DESTINATIONS),
-    //offers: generateOffers(getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT), pointType),
     offers: OFFERS.filter((o) => o.type === pointType),
     info: {
       description: getRandomArrayElement(DESCRIPTIONS),
