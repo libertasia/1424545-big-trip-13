@@ -92,7 +92,7 @@ const generatePoint = () => {
     offers: OFFERS.filter((o) => o.type === pointType),
     info: {
       description: getRandomArrayElement(DESCRIPTIONS),
-      photo: generatePhotos(getRandomInteger(MIN_PHOTOS_COUNT, MAX_PHOTOS_COUNT))
+      photos: generatePhotos(getRandomInteger(MIN_PHOTOS_COUNT, MAX_PHOTOS_COUNT))
     },
     price: getRandomInteger(MIN_PRICE, MAX_PRICE),
     startTime,

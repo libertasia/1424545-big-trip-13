@@ -1,52 +1,41 @@
 import dayjs from "dayjs";
 import {DESTINATIONS} from "../mock/point.js";
 
+const createDestinationElementTemplate = (element) => {
+  return `
+    <option value="${element}"></option>
+  `;
+};
+
+const createOfferTemplate = (offer) => {
+  const offerId = offer.title.replaceAll(` `, `-`);
+  return `
+    <div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerId}" type="checkbox" name="event-offer-${offerId}" checked>
+      <label class="event__offer-label" for="event-offer-${offerId}">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>
+  `;
+};
+
+const createPhotoTemplate = (imgPath) => {
+  return `
+    <img class="event__photo" src="${imgPath}" alt="Event photo">
+  `;
+};
+
 const createEditPointTemplate = (point) => {
   const {type, destination, price, startTime, endTime, offers, info} = point;
 
   const eventStartTime = dayjs(startTime).format(`DD/MM/YY HH:mm`);
   const eventEndTime = dayjs(endTime).format(`DD/MM/YY HH:mm`);
 
-  const createDestinationElementTemplate = (element) => {
-    return `
-      <option value="${element}"></option>
-    `;
-  };
-
-  let destinationsMarkup = ``;
-  DESTINATIONS.forEach((element) => {
-    destinationsMarkup += createDestinationElementTemplate(element);
-  });
-
-  const createOfferTemplate = (offer) => {
-    const offerId = offer.title.replaceAll(` `, `-`);
-    return `
-      <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerId}" type="checkbox" name="event-offer-${offerId}" checked>
-        <label class="event__offer-label" for="event-offer-${offerId}">
-          <span class="event__offer-title">${offer.title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>
-    `;
-  };
-
-  let offersMarkup = ``;
-  offers.forEach((element) => {
-    offersMarkup += createOfferTemplate(element);
-  });
-
-  const createPhotoTemplate = (imgPath) => {
-    return `
-      <img class="event__photo" src="${imgPath}" alt="Event photo">
-    `;
-  };
-
-  let photosMarkup = ``;
-  info.photo.forEach((element) => {
-    photosMarkup += createPhotoTemplate(element);
-  });
+  const destinationsMarkup = DESTINATIONS.map((element) => createDestinationElementTemplate(element)).join(``);
+  const offersMarkup = offers.map((element) => createOfferTemplate(element)).join(``);
+  const photosMarkup = info.photos.map((element) => createPhotoTemplate(element)).join(``);
 
   return `
     <li class="trip-events__item">
