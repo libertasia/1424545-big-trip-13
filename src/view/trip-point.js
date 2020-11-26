@@ -21,21 +21,21 @@ const getEventDuration = (startTime, endTime) => {
   }
 };
 
+const createOfferTemplate = (offer) => {
+  return `
+  <li class="event__offer">
+    <span class="event__offer-title">${offer.title}</span>
+    &plus;&euro;&nbsp;
+    <span class="event__offer-price">${offer.price}</span>
+  </li>`;
+};
+
 const createTripPointTemplate = (point) => {
   const {type, destination, price, startTime, endTime, offers, isFavorite} = point;
 
   const date = dayjs(startTime).format(`MMM D`);
   const eventStartTime = dayjs(startTime).format(`HH:mm`);
   const eventEndTime = dayjs(endTime).format(`HH:mm`);
-
-  const createOfferTemplate = (offer) => {
-    return `
-    <li class="event__offer">
-      <span class="event__offer-title">${offer.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
-    </li>`;
-  };
 
   let offersMarkup = ``;
   offers.forEach((element) => {
