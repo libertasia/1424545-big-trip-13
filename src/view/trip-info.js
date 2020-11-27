@@ -1,11 +1,14 @@
 import dayjs from "dayjs";
+import {createElement} from "../utils.js";
+
+const MAX_POINTS_COUNT = 3;
 
 const createTripInfoTemplate = (points) => {
   let title = ``;
   let dates = ``;
   let cost = 0;
 
-  if (points.length <= 3) {
+  if (points.length <= MAX_POINTS_COUNT) {
     points.forEach((element) => {
       title += `${element.destination} &mdash; `;
     });
@@ -38,4 +41,26 @@ const createTripInfoTemplate = (points) => {
   `;
 };
 
-export {createTripInfoTemplate};
+export default class TripInfo {
+  constructor(points) {
+    this._points = points;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
