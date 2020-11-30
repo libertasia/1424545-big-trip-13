@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import {DESTINATIONS} from "../mock/point.js";
+import {createElement} from "../utils.js";
 
 const createDestinationElementTemplate = (element) => {
   return `
@@ -162,4 +163,26 @@ const createEditPointTemplate = (point) => {
   `;
 };
 
-export {createEditPointTemplate};
+export default class TripEditPoint {
+  constructor(point) {
+    this._point = point;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditPointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
