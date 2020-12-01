@@ -40,9 +40,7 @@ const createTripPointTemplate = (point) => {
 
   let offersMarkup = ``;
   offers.forEach((element) => {
-    if (element.isChecked) {
-      offersMarkup += createOfferTemplate(element);
-    }
+    offersMarkup += createOfferTemplate(element);
   });
 
   const favoriteBtnClass = isFavorite ?
