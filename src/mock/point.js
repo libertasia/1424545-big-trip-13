@@ -45,7 +45,8 @@ const generateMockOffers = () => {
       offers.push({
         type: pointType,
         title: `${pointType} offer ${i}`,
-        price: OFFER_PRICES[getRandomInteger(0, OFFER_PRICES.length - 1)]
+        price: OFFER_PRICES[getRandomInteger(0, OFFER_PRICES.length - 1)],
+        isChecked: Boolean(getRandomInteger(0, 1))
       });
     }
   });

@@ -10,9 +10,10 @@ const createDestinationElementTemplate = (element) => {
 
 const createOfferTemplate = (offer) => {
   const offerId = offer.title.replaceAll(` `, `-`);
+  const checkedString = offer.isChecked ? `checked` : ``;
   return `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerId}" type="checkbox" name="event-offer-${offerId}" checked>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerId}" type="checkbox" name="event-offer-${offerId}" ${checkedString}>
       <label class="event__offer-label" for="event-offer-${offerId}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
