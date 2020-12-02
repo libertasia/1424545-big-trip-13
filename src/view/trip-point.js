@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const MINUTES_PER_HOUR = 60;
 const MINUTES_PER_DAY = 1440;
@@ -84,26 +84,25 @@ const createTripPointTemplate = (point) => {
   `;
 };
 
-export default class TripPoint {
+export default class TripPoint extends AbstractView {
   constructor(point) {
+    super();
     this._point = point;
 
-    this._element = null;
+    this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
   }
 
   getTemplate() {
     return createTripPointTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _rollupBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setRollupBtnClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._rollupBtnClickHandler);
   }
 }
