@@ -1,4 +1,4 @@
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 import {POINT_TYPES} from "../const.js";
 import dayjs from "dayjs";
 
