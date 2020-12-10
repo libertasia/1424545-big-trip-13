@@ -90,6 +90,7 @@ export default class TripPoint extends AbstractView {
     this._point = point;
 
     this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
+    this._favoriteBtnClickHandler = this._favoriteBtnClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -104,5 +105,15 @@ export default class TripPoint extends AbstractView {
   setRollupBtnClickHandler(callback) {
     this._callback.editClick = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._rollupBtnClickHandler);
+  }
+
+  _favoriteBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
+  setFavoriteBtnClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteBtnClickHandler);
   }
 }
