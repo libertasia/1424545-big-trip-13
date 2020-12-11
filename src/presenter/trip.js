@@ -1,3 +1,5 @@
+import SiteMenuView from "../view/site-menu.js";
+import TripFiltersView from "../view/trip-filters.js";
 import TripInfoView from "../view/trip-info.js";
 import TripSortView from "../view/trip-sort.js";
 import TripListView from "../view/trip-list.js";
@@ -6,7 +8,8 @@ import PointPresenter from "./point.js";
 import {render, RenderPosition} from "../utils/render.js";
 import {updateItem} from "../utils/common.js";
 
-const tripEventsSection = document.querySelector(`.trip-events`);
+const tripEventsContainer = document.querySelector(`.trip-events`);
+const tripMenuContainer = document.querySelector(`.trip-main__trip-controls`);
 
 export default class Trip {
   constructor(tripContainer) {
@@ -24,7 +27,17 @@ export default class Trip {
     this._tripPoints = tripPoints.slice();
 
     this._tripInfoComponent = new TripInfoView(this._tripPoints);
+    this._siteMenuComponent = new SiteMenuView();
+    this._tripFiltersComponent = new TripFiltersView();
     this._renderTrip();
+  }
+
+  _renderSiteMenu() {
+    render(tripMenuContainer, this._siteMenuComponent, RenderPosition.AFTERBEGIN);
+  }
+
+  _renderFilters() {
+    render(tripMenuContainer, this._tripFiltersComponent, RenderPosition.BEFOREEND);
   }
 
   _renderTripInfo() {
@@ -32,11 +45,11 @@ export default class Trip {
   }
 
   _renderSort() {
-    render(tripEventsSection, this._tripSortComponent, RenderPosition.AFTERBEGIN);
+    render(tripEventsContainer, this._tripSortComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderList() {
-    render(tripEventsSection, this._tripListComponent, RenderPosition.BEFOREEND);
+    render(tripEventsContainer, this._tripListComponent, RenderPosition.BEFOREEND);
   }
 
   _renderPoint(point) {
@@ -57,10 +70,14 @@ export default class Trip {
   }
 
   _renderListEmpty() {
-    render(tripEventsSection, this._listEmptyComponent, RenderPosition.AFTERBEGIN);
+    render(tripEventsContainer, this._listEmptyComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderTrip() {
+    this._renderSiteMenu();
+
+    this._renderFilters();
+
     if (this._tripPoints.length === 0) {
       this._renderListEmpty();
       return;
