@@ -80,6 +80,8 @@ const getRandomDate = () => {
   return dayjs(date);
 };
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 const generatePoint = () => {
   const startTime = getRandomDate();
   let endTime = startTime.add(getRandomInteger(0, 24), `hour`);
@@ -95,6 +97,7 @@ const generatePoint = () => {
     }
   });
   return {
+    id: generateId(),
     type: pointType,
     destination: getRandomArrayElement(DESTINATIONS),
     offers: selectedOffers,
