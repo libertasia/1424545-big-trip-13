@@ -7,6 +7,7 @@ import ListEmptyView from "../view/list-empty.js";
 import PointPresenter from "./point.js";
 import {render, RenderPosition} from "../utils/render.js";
 import {updateItem} from "../utils/common.js";
+import {SortType} from "../const.js";
 
 const tripEventsContainer = document.querySelector(`.trip-events`);
 const tripMenuContainer = document.querySelector(`.trip-main__trip-controls`);
@@ -15,12 +16,14 @@ export default class Trip {
   constructor(tripContainer) {
     this._tripContainer = tripContainer;
     this._pointPresenter = {};
+    this._currentSortType = SortType.DEFAULT;
 
     this._listEmptyComponent = new ListEmptyView();
     this._tripSortComponent = new TripSortView();
     this._tripListComponent = new TripListView();
-    this._changePointHandler = this._changePointHandler.bind(this);
+    this._pointChangeHandler = this._pointChangeHandler.bind(this);
     this._modeChangeHandler = this._modeChangeHandler.bind(this);
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
   init(tripPoints) {
@@ -46,6 +49,7 @@ export default class Trip {
 
   _renderSort() {
     render(tripEventsContainer, this._tripSortComponent, RenderPosition.AFTERBEGIN);
+    this._tripSortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
   }
 
   _renderList() {
@@ -53,7 +57,7 @@ export default class Trip {
   }
 
   _renderPoint(point) {
-    const pointPresenter = new PointPresenter(this._tripListComponent, this._changePointHandler, this._modeChangeHandler);
+    const pointPresenter = new PointPresenter(this._tripListComponent, this._pointChangeHandler, this._modeChangeHandler);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }
@@ -91,7 +95,7 @@ export default class Trip {
     this._renderPoints();
   }
 
-  _changePointHandler(updatedPoint) {
+  _pointChangeHandler(updatedPoint) {
     this._tripPoints = updateItem(this._tripPoints, updatedPoint);
     this._pointPresenter[updatedPoint.id].init(updatedPoint);
   }
@@ -100,5 +104,11 @@ export default class Trip {
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.resetView());
+  }
+
+  _sortTypeChangeHandler(sortType) {
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Рендерим список заново
   }
 }
