@@ -8,6 +8,7 @@ import PointPresenter from "./point.js";
 import {render, RenderPosition} from "../utils/render.js";
 import {updateItem} from "../utils/common.js";
 import {SortType} from "../const.js";
+import {sortByDate, sortByTime, sortByPrice} from "../utils/sort.js";
 
 const tripEventsContainer = document.querySelector(`.trip-events`);
 const tripMenuContainer = document.querySelector(`.trip-main__trip-controls`);
@@ -28,6 +29,7 @@ export default class Trip {
 
   init(tripPoints) {
     this._tripPoints = tripPoints.slice();
+    this._tripPoints.sort(sortByDate);
 
     this._tripInfoComponent = new TripInfoView(this._tripPoints);
     this._siteMenuComponent = new SiteMenuView();
@@ -106,9 +108,30 @@ export default class Trip {
       .forEach((presenter) => presenter.resetView());
   }
 
+  _sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.DEFAULT:
+        this._tripPoints.sort(sortByDate);
+        break;
+      case SortType.TIME:
+        this._tripPoints.sort(sortByTime);
+        break;
+      case SortType.PRICE:
+        this._tripPoints.sort(sortByPrice);
+        break;
+    }
+    this._currentSortType = sortType;
+  }
+
   _sortTypeChangeHandler(sortType) {
-    // - Сортируем задачи
-    // - Очищаем список
-    // - Рендерим список заново
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortPoints(sortType);
+
+    this._clearPointsList();
+
+    this._renderPoints();
   }
 }

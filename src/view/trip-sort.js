@@ -46,7 +46,7 @@ export default class TripSort extends AbstractView {
   _sortTypeChangeHandler(evt) {
     if (evt.target.matches(`input[type="radio"]`) && !evt.target.disabled) {
       evt.preventDefault();
-      this._callback.sortTypeChange(evt.target.value.sortType);
+      this._callback.sortTypeChange(evt.target.value);
     }
   }
 
