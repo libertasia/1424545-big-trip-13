@@ -22,9 +22,9 @@ export default class Trip {
     this._listEmptyComponent = new ListEmptyView();
     this._tripSortComponent = new TripSortView();
     this._tripListComponent = new TripListView();
-    this._pointChangeHandler = this._pointChangeHandler.bind(this);
-    this._modeChangeHandler = this._modeChangeHandler.bind(this);
-    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+    this._handlePointChange = this._handlePointChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(tripPoints) {
@@ -51,7 +51,7 @@ export default class Trip {
 
   _renderSort() {
     render(tripEventsContainer, this._tripSortComponent, RenderPosition.AFTERBEGIN);
-    this._tripSortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
+    this._tripSortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderList() {
@@ -59,7 +59,7 @@ export default class Trip {
   }
 
   _renderPoint(point) {
-    const pointPresenter = new PointPresenter(this._tripListComponent, this._pointChangeHandler, this._modeChangeHandler);
+    const pointPresenter = new PointPresenter(this._tripListComponent, this._handlePointChange, this._handleModeChange);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }
@@ -97,17 +97,6 @@ export default class Trip {
     this._renderPoints();
   }
 
-  _pointChangeHandler(updatedPoint) {
-    this._tripPoints = updateItem(this._tripPoints, updatedPoint);
-    this._pointPresenter[updatedPoint.id].init(updatedPoint);
-  }
-
-  _modeChangeHandler() {
-    Object
-      .values(this._pointPresenter)
-      .forEach((presenter) => presenter.resetView());
-  }
-
   _sortPoints(sortType) {
     switch (sortType) {
       case SortType.DEFAULT:
@@ -123,7 +112,18 @@ export default class Trip {
     this._currentSortType = sortType;
   }
 
-  _sortTypeChangeHandler(sortType) {
+  _handlePointChange(updatedPoint) {
+    this._tripPoints = updateItem(this._tripPoints, updatedPoint);
+    this._pointPresenter[updatedPoint.id].init(updatedPoint);
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
+  _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
     }

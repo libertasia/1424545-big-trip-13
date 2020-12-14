@@ -18,10 +18,10 @@ export default class Point {
     this._mode = Mode.DEFAULT;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
-    this._arrowUpClickHandler = this._arrowUpClickHandler.bind(this);
-    this._arrowDownClickHandler = this._arrowDownClickHandler.bind(this);
-    this._formSubmitHandler = this._formSubmitHandler.bind(this);
-    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._handleArrowUpClick = this._handleArrowUpClick.bind(this);
+    this._handleArrowDownClick = this._handleArrowDownClick.bind(this);
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleFavoriteBtnClick = this._handleFavoriteBtnClick.bind(this);
   }
 
   init(point) {
@@ -33,10 +33,10 @@ export default class Point {
     this._pointComponent = new TripPointView(point);
     this._pointEditComponent = new TripEditPointView(point);
 
-    this._pointComponent.setRollupBtnClickHandler(this._arrowDownClickHandler);
-    this._pointEditComponent.setFormSubmitHandler(this._formSubmitHandler);
-    this._pointEditComponent.setRollupBtnClickHandler(this._arrowUpClickHandler);
-    this._pointComponent.setFavoriteBtnClickHandler(this._favoriteClickHandler);
+    this._pointComponent.setRollupBtnClickHandler(this._handleArrowDownClick);
+    this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._pointEditComponent.setRollupBtnClickHandler(this._handleArrowUpClick);
+    this._pointComponent.setFavoriteBtnClickHandler(this._handleFavoriteBtnClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this._pointListContainer, this._pointComponent, RenderPosition.BEFOREEND);
@@ -86,20 +86,20 @@ export default class Point {
     }
   }
 
-  _arrowDownClickHandler() {
+  _handleArrowDownClick() {
     this._replaceCardToForm();
   }
 
-  _formSubmitHandler(point) {
+  _handleFormSubmit(point) {
     this._changeData(point);
     this._replaceFormToCard();
   }
 
-  _arrowUpClickHandler() {
+  _handleArrowUpClick() {
     this._replaceFormToCard();
   }
 
-  _favoriteClickHandler() {
+  _handleFavoriteBtnClick() {
     this._changeData(
         Object.assign(
             {},
