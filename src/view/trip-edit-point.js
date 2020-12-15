@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import {DESTINATIONS, OFFERS} from "../mock/point.js";
-import AbstractView from "./abstract.js";
+// import AbstractView from "./abstract.js";
+import SmartView from "./smart.js";
 
 const createDestinationElementTemplate = (element) => {
   return `
@@ -29,14 +30,14 @@ const createPhotoTemplate = (imgPath) => {
   `;
 };
 
-const createEditPointTemplate = (point) => {
-  const {type, destination, price, startTime, endTime, offers, info} = point;
+const createEditPointTemplate = (data) => {
+  const {type, destination, price, startTime, endTime, offers, info} = data;
 
   const eventStartTime = dayjs(startTime).format(`DD/MM/YY HH:mm`);
   const eventEndTime = dayjs(endTime).format(`DD/MM/YY HH:mm`);
 
   const destinationsMarkup = DESTINATIONS.map((element) => createDestinationElementTemplate(element)).join(``);
-  const availableOffers = OFFERS.filter((o) => o.type === point.type);
+  const availableOffers = OFFERS.filter((o) => o.type === data.type);
   let offersMarkup = availableOffers.map((element) => createOfferTemplate(element, offers.includes(element))).join(``);
   const photosMarkup = info.photos.map((element) => createPhotoTemplate(element)).join(``);
 
@@ -47,9 +48,9 @@ const createEditPointTemplate = (point) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" value = "${type}">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -86,7 +87,7 @@ const createEditPointTemplate = (point) => {
                 </div>
 
                 <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
                   <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
                 </div>
 
@@ -165,22 +166,29 @@ const createEditPointTemplate = (point) => {
   `;
 };
 
-export default class TripEditPoint extends AbstractView {
+export default class TripEditPoint extends SmartView {
   constructor(point) {
     super();
-    this._point = point;
+    // this._point = point;
+    this._data = TripEditPoint.parsePointToData(point);
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
+    this._pointTypeToggleHandler = this._pointTypeToggleHandler.bind(this);
+    this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._point);
+    // return createEditPointTemplate(this._point);
+    return createEditPointTemplate(this._data);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._point);
+    // this._callback.formSubmit(this._point);
+    this._callback.formSubmit(TripEditPoint.parseDataToPoint(this._data));
   }
 
   setFormSubmitHandler(callback) {
@@ -196,5 +204,67 @@ export default class TripEditPoint extends AbstractView {
   setRollupBtnClickHandler(callback) {
     this._callback.editClick = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._rollupBtnClickHandler);
+  }
+
+  static parsePointToData(point) {
+    return Object.assign(
+        {},
+        point
+        // {
+        //   isDueDate: task.dueDate !== null,
+        //   isRepeating: isTaskRepeating(task.repeating)
+        // }
+    );
+  }
+
+  static parseDataToPoint(data) {
+    let point = Object.assign({}, data);
+
+    // if (!point.isDueDate) {
+    //   point.dueDate = null;
+    // }
+
+    // if (!point.isRepeating) {
+    //   point.repeating = {
+    //     mo: false,
+    //     tu: false,
+    //     we: false,
+    //     th: false,
+    //     fr: false,
+    //     sa: false,
+    //     su: false
+    //   };
+    // }
+
+    // delete point.isDueDate;
+    // delete point.isRepeating;
+
+    return point;
+  }
+
+  _pointTypeToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData();
+  }
+
+  _destinationToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      destination: evt.target.value
+    }, false);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-toggle`)
+      .addEventListener(`change`, this._pointTypeToggleHandler);
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, this._destinationToggleHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
   }
 }
