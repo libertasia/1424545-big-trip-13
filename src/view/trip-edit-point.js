@@ -320,6 +320,10 @@ export default class TripEditPoint extends SmartView {
   }
 
   _startTimeChangeHandler([userDate]) {
+    let newDate = dayjs(userDate);
+    if (newDate.isAfter(this._data.endTime)) {
+      this._data.endTime = newDate;
+    }
     this.updateData({
       startTime: dayjs(userDate)
     });
