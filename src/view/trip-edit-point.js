@@ -225,10 +225,9 @@ export default class TripEditPoint extends SmartView {
   }
 
   static parsePointToData(point) {
-    return Object.assign(
-        {},
-        point
-    );
+    let data = Object.assign({}, point);
+    data.offers = point.offers.slice();
+    return data;
   }
 
   static parseDataToPoint(data) {
@@ -264,7 +263,7 @@ export default class TripEditPoint extends SmartView {
       }, true);
     } else {
       this.updateData({
-        offers: this._data.filter((o) => o.id !== evt.target.id)
+        offers: this._data.offers.filter((o) => o.id !== evt.target.id)
       }, true);
     }
   }
