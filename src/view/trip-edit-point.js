@@ -31,6 +31,9 @@ const createPhotoTemplate = (imgPath) => {
 };
 
 const createDestinationTemplate = (destination) => {
+  if (destination === null) {
+    return ``;
+  }
   if (!destination.description && (destination.photos === null || destination.photos.length === 0)) {
     return ``;
   }
@@ -49,16 +52,28 @@ const createDestinationTemplate = (destination) => {
   `;
 };
 
-const createEditPointTemplate = (data) => {
-  const {type, destination, price, startTime, endTime, offers} = data;
+const createButtonsTemplate = (isNew) => {
+  const resetBtnText = isNew ? `Cancel` : `Delete`;
+  const rollupBtnClass = isNew ? `visually-hidden` : ``;
+  return `
+    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+    <button class="event__reset-btn" type="reset">${resetBtnText}</button>
+    <button class="event__rollup-btn ${rollupBtnClass}" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>`;
+};
 
-  const eventStartTime = dayjs(startTime).format(`DD/MM/YY HH:mm`);
-  const eventEndTime = dayjs(endTime).format(`DD/MM/YY HH:mm`);
+const createEditPointTemplate = (data) => {
+  const {type, destination, price, startTime, endTime, offers, isNew} = data;
+
+  const eventStartTime = startTime === null ? `` : dayjs(startTime).format(`DD/MM/YY HH:mm`);
+  const eventEndTime = endTime === null ? `` : dayjs(endTime).format(`DD/MM/YY HH:mm`);
 
   const destinationsMarkup = DESTINATIONS.map((element) => createDestinationElementTemplate(element)).join(``);
-  const availableOffers = OFFERS.filter((o) => o.type.toLowerCase() === data.type.toLowerCase());
+  const availableOffers = type === null ? [] : OFFERS.filter((o) => o.type.toLowerCase() === data.type.toLowerCase());
   let offersMarkup = availableOffers.map((element) => createOfferTemplate(element, offers.includes(element))).join(``);
   const destinationSectionMarkup = createDestinationTemplate(destination);
+  const buttonsMarkup = createButtonsTemplate(isNew);
 
   return `
     <li class="trip-events__item">
@@ -154,11 +169,7 @@ const createEditPointTemplate = (data) => {
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          ${buttonsMarkup}
         </header>
         <section class="event__details">
           <section class="event__section  event__section--offers">
@@ -225,14 +236,20 @@ export default class TripEditPoint extends SmartView {
   }
 
   static parsePointToData(point) {
-    let data = Object.assign({}, point);
+    let data = Object.assign(
+        {},
+        point,
+        {
+          isNew: point.type === null
+        }
+    );
     data.offers = point.offers.slice();
     return data;
   }
 
   static parseDataToPoint(data) {
     let point = Object.assign({}, data);
-
+    delete point.isNew;
     return point;
   }
 
