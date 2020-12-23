@@ -194,6 +194,7 @@ export default class TripEditPoint extends SmartView {
     this._datepickerEnd = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
     this._pointTypeToggleHandler = this._pointTypeToggleHandler.bind(this);
     this._destinationToggleHandler = this._destinationToggleHandler.bind(this);
@@ -203,6 +204,19 @@ export default class TripEditPoint extends SmartView {
 
     this._setInnerHandlers();
     this._setDatepicker();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerStart = null;
+    }
+    if (this._datepickerEnd) {
+      this._datepickerEnd.destroy();
+      this._datepickerEnd = null;
+    }
   }
 
   getTemplate() {
@@ -302,6 +316,7 @@ export default class TripEditPoint extends SmartView {
     this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setRollupBtnClickHandler(this._callback.editClick);
+    this.setDeleteBtnClickHandler(this._callback.deleteClick);
   }
 
   _setDatepicker() {
@@ -349,5 +364,18 @@ export default class TripEditPoint extends SmartView {
     this.updateData({
       endTime: dayjs(userDate)
     });
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    if (this._data.isNew) {
+      return;
+    }
+    this._callback.deleteClick(TripEditPoint.parseDataToPoint(this._data));
+  }
+
+  setDeleteBtnClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 }
