@@ -31,7 +31,7 @@ export default class Points extends Observer {
   addPoint(updateType, update) {
     this._points = [
       update,
-      ...this._tasks
+      ...this._points
     ];
 
     this._notify(updateType, update);

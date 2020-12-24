@@ -96,11 +96,37 @@ export default class Point {
     this._replaceCardToForm();
   }
 
+  _isOffersEqual(offers1, offers2) {
+    if (offers1 === null && offers2 === null) {
+      return true;
+    }
+    if (offers1.length !== offers2.length) {
+      return false;
+    }
+    for (let i = 0; i < offers1.length; i++) {
+      let isInOffers2 = false;
+      for (let j = 0; j < offers2.length; j++) {
+        if (offers1[i].id === offers2[j].id) {
+          isInOffers2 = true;
+          break;
+        }
+      }
+      if (!isInOffers2) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   _handleFormSubmit(update) {
-    const isMinorUpdate = !isDatesEqual(this._point.startTime, update.startTime);
+    const isMajorUpdate =
+      !isDatesEqual(this._point.startTime, update.startTime) ||
+      this._point.price !== update.price ||
+      this._point.destination.name !== update.destination.name ||
+      !this._isOffersEqual(this._point.offers, update.offers);
     this._changeData(
         UserAction.UPDATE_POINT,
-        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        isMajorUpdate ? UpdateType.MAJOR : UpdateType.PATCH,
         update
     );
     this._replaceFormToCard();
@@ -109,7 +135,7 @@ export default class Point {
   _handleDeleteBtnClick(point) {
     this._changeData(
         UserAction.DELETE_POINT,
-        UpdateType.MINOR,
+        UpdateType.MAJOR,
         point
     );
   }
