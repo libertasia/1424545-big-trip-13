@@ -3,6 +3,7 @@ import TripInfoView from "../view/trip-info.js";
 import TripSortView from "../view/trip-sort.js";
 import TripListView from "../view/trip-list.js";
 import ListEmptyView from "../view/list-empty.js";
+import NewButtonView from "../view/new-button.js";
 import PointPresenter from "./point.js";
 import NewPointPresenter from "./new-point.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
@@ -24,10 +25,12 @@ export default class Trip {
     this._listEmptyComponent = new ListEmptyView();
     this._tripSortComponent = new TripSortView();
     this._tripListComponent = new TripListView();
+    this._newButtonComponent = new NewButtonView();
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleNewButtonClick = this._handleNewButtonClick.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
@@ -38,12 +41,15 @@ export default class Trip {
   init() {
     this._tripInfoComponent = new TripInfoView(this._getPoints());
     this._siteMenuComponent = new SiteMenuView();
+    this._newButtonComponent.setNewButtonClickHandler(this._handleNewButtonClick);
+    this._renderNewButton();
     this._renderTrip();
   }
 
-  createPoint() {
+  _handleNewButtonClick() {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._newButtonComponent.getElement().disabled = true;
     this._newPointPresenter.init();
   }
 
@@ -65,6 +71,10 @@ export default class Trip {
 
   _renderSiteMenu() {
     render(tripMenuContainer, this._siteMenuComponent, RenderPosition.AFTERBEGIN);
+  }
+
+  _renderNewButton() {
+    render(this._tripContainer, this._newButtonComponent, RenderPosition.BEFOREEND);
   }
 
   _renderTripInfo() {
@@ -143,6 +153,7 @@ export default class Trip {
         this._pointsModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
+        this._newButtonComponent.getElement().disabled = false;
         this._pointsModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:

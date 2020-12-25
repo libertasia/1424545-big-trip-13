@@ -10,7 +10,6 @@ const points = new Array(POINT_COUNT).fill().map(generatePoint);
 
 const tripMainContainer = document.querySelector(`.trip-main`);
 const tripMenuContainer = tripMainContainer.querySelector(`.trip-main__trip-controls`);
-const newEventBtn = tripMainContainer.querySelector(`.trip-main__event-add-btn`);
 
 const filterModel = new FilterModel();
 
@@ -22,8 +21,3 @@ const filterPresenter = new FilterPresenter(tripMenuContainer, filterModel, poin
 
 filterPresenter.init();
 tripPresenter.init();
-
-newEventBtn.addEventListener(`click`, (evt) => {
-  evt.preventDefault();
-  tripPresenter.createPoint();
-});

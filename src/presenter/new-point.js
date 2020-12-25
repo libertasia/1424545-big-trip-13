@@ -3,8 +3,6 @@ import {generateId} from "../mock/point.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 
-const newEventBtn = document.querySelector(`.trip-main__event-add-btn`);
-
 export default class NewPoint {
   constructor(tripListContainer, changeData) {
     this._tripListContainer = tripListContainer;
@@ -29,7 +27,6 @@ export default class NewPoint {
     render(this._tripListContainer, this._pointEditComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
-    newEventBtn.disabled = true;
   }
 
   destroy() {
@@ -41,7 +38,6 @@ export default class NewPoint {
     this._pointEditComponent = null;
 
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
-    newEventBtn.disabled = false;
   }
 
   _handleFormSubmit(point) {
