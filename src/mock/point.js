@@ -83,7 +83,7 @@ const generatePhotos = (count) => {
 };
 
 const getRandomDate = () => {
-  const minYear = 2019;
+  const minYear = 2020;
   const maxYear = 2025;
   const year = getRandomInteger(minYear, maxYear);
   const month = getRandomInteger(0, 11);
