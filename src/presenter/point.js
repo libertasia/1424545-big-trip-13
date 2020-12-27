@@ -1,6 +1,8 @@
 import TripPointView from "../view/trip-point.js";
 import TripEditPointView from "../view/trip-edit-point.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {isDatesEqual} from "../utils/common.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -22,6 +24,7 @@ export default class Point {
     this._handleArrowDownClick = this._handleArrowDownClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteBtnClick = this._handleFavoriteBtnClick.bind(this);
+    this._handleDeleteBtnClick = this._handleDeleteBtnClick.bind(this);
   }
 
   init(point) {
@@ -34,9 +37,11 @@ export default class Point {
     this._pointEditComponent = new TripEditPointView(point);
 
     this._pointComponent.setRollupBtnClickHandler(this._handleArrowDownClick);
+    this._pointComponent.setFavoriteBtnClickHandler(this._handleFavoriteBtnClick);
+
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditComponent.setRollupBtnClickHandler(this._handleArrowUpClick);
-    this._pointComponent.setFavoriteBtnClickHandler(this._handleFavoriteBtnClick);
+    this._pointEditComponent.setDeleteBtnClickHandler(this._handleDeleteBtnClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this._pointListContainer, this._pointComponent, RenderPosition.BEFOREEND);
@@ -91,9 +96,48 @@ export default class Point {
     this._replaceCardToForm();
   }
 
-  _handleFormSubmit(point) {
-    this._changeData(point);
+  _isOffersEqual(offers1, offers2) {
+    if (offers1 === null && offers2 === null) {
+      return true;
+    }
+    if (offers1.length !== offers2.length) {
+      return false;
+    }
+    for (let i = 0; i < offers1.length; i++) {
+      let isInOffers2 = false;
+      for (let j = 0; j < offers2.length; j++) {
+        if (offers1[i].id === offers2[j].id) {
+          isInOffers2 = true;
+          break;
+        }
+      }
+      if (!isInOffers2) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  _handleFormSubmit(update) {
+    const isMajorUpdate =
+      !isDatesEqual(this._point.startTime, update.startTime) ||
+      this._point.price !== update.price ||
+      this._point.destination.name !== update.destination.name ||
+      !this._isOffersEqual(this._point.offers, update.offers);
+    this._changeData(
+        UserAction.UPDATE_POINT,
+        isMajorUpdate ? UpdateType.MAJOR : UpdateType.PATCH,
+        update
+    );
     this._replaceFormToCard();
+  }
+
+  _handleDeleteBtnClick(point) {
+    this._changeData(
+        UserAction.DELETE_POINT,
+        UpdateType.MAJOR,
+        point
+    );
   }
 
   _handleArrowUpClick() {
@@ -103,6 +147,8 @@ export default class Point {
 
   _handleFavoriteBtnClick() {
     this._changeData(
+        UserAction.UPDATE_POINT,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._point,
