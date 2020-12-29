@@ -36,4 +36,10 @@ const FilterType = {
   FUTURE: `future`
 };
 
-export {POINT_TYPES, SortType, UserAction, UpdateType, FilterType};
+const MenuItem = {
+  // ADD_NEW_POINT: `ADD_NEW_POINT`,
+  TABLE: `TABLE`,
+  STATS: `STATS`
+};
+
+export {POINT_TYPES, SortType, UserAction, UpdateType, FilterType, MenuItem};
