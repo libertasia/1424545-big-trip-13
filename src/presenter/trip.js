@@ -159,6 +159,9 @@ export default class Trip {
       case UserAction.DELETE_POINT:
         this._pointsModel.deletePoint(updateType, update);
         break;
+      case UserAction.CANCEL_ADD_POINT:
+        this._newButtonComponent.getElement().disabled = false;
+        break;
     }
   }
 
