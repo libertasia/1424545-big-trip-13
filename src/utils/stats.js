@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {POINT_TYPES} from "../const.js";
 
 const getChartLabels = (points) => {

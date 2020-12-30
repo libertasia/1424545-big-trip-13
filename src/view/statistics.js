@@ -14,7 +14,7 @@ const renderMoneyChart = (ctx, points) => {
     data: {
       labels: chartLabels,
       datasets: [{
-        data: chartLabels.map((t) => costs.get(t)), // money spent for each type will be here
+        data: chartLabels.map((t) => costs.get(t)),
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
         anchor: `start`
@@ -265,7 +265,6 @@ export default class Statistics extends SmartView {
   }
 
   _setCharts() {
-    // Нужно отрисовать три графика
     if (this._moneyChart !== null || this._typeChart !== null || this._timeChart !== null) {
       this._moneyChart = null;
       this._typeChart = null;
@@ -277,7 +276,6 @@ export default class Statistics extends SmartView {
     const typeCtx = this.getElement().querySelector(`.statistics__chart--transport`);
     const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
 
-    // Рассчитаем высоту канваса в зависимости от того, сколько данных в него будет передаваться
     const BAR_HEIGHT = 55;
     const barsCount = getChartLabels(points).length;
     moneyCtx.height = BAR_HEIGHT * barsCount;
