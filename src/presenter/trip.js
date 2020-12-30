@@ -40,6 +40,7 @@ export default class Trip {
   init() {
     this._tripInfoComponent = new TripInfoView(this._getPoints());
     this._siteMenuComponent = new SiteMenuView();
+    this._statsComponent = new StatisticsView(this._pointsModel.getPoints());
     this._newButtonComponent.setNewButtonClickHandler(this._handleNewButtonClick);
     this._siteMenuComponent.setMenuClickHandler(this._handleSiteMenuClick);
 
@@ -183,7 +184,8 @@ export default class Trip {
         break;
       case UpdateType.MAJOR:
         this._clearTrip();
-        this._renderTrip();
+        this.destroy();
+        this.init();
         break;
     }
   }
@@ -207,6 +209,9 @@ export default class Trip {
   _handleNewButtonClick() {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    if (this._siteMenuComponent.getActiveMenuItem() === MenuItem.STATS) {
+      this._handleSiteMenuClick(MenuItem.TABLE);
+    }
     this._newButtonComponent.getElement().disabled = true;
     this._newPointPresenter.init();
   }
@@ -214,11 +219,16 @@ export default class Trip {
   _handleSiteMenuClick(menuItem) {
     switch (menuItem) {
       case MenuItem.TABLE:
+        remove(this._statsComponent);
+        this._siteMenuComponent.setMenuItem(MenuItem.TABLE);
+        this._clearTrip();
         this.init();
         break;
       case MenuItem.STATS:
+        this._siteMenuComponent.setMenuItem(MenuItem.STATS);
         this.destroy();
-        render(tripEventsContainer, new StatisticsView(this._pointsModel.getPoints()), RenderPosition.BEFOREEND);
+        this._statsComponent = new StatisticsView(this._pointsModel.getPoints());
+        render(tripEventsContainer, this._statsComponent, RenderPosition.BEFOREEND);
         break;
     }
   }

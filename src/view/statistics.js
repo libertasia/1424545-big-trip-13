@@ -152,7 +152,7 @@ const renderTimeChart = (ctx, points) => {
     data: {
       labels: chartLabels,
       datasets: [{
-        data: chartLabels.map((t) => times.get(t)),
+        data: chartLabels.map((t) => Math.round(times.get(t) / MINUTES_PER_DAY)),
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
         anchor: `start`
@@ -167,7 +167,7 @@ const renderTimeChart = (ctx, points) => {
           color: `#000000`,
           anchor: `end`,
           align: `start`,
-          formatter: (val) => `${Math.round(val / MINUTES_PER_DAY)}D`
+          formatter: (val) => `${val}D`
         }
       },
       title: {
