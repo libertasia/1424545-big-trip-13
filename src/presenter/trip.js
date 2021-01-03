@@ -4,10 +4,11 @@ import TripSortView from "../view/trip-sort.js";
 import TripListView from "../view/trip-list.js";
 import ListEmptyView from "../view/list-empty.js";
 import NewButtonView from "../view/new-button.js";
+import StatisticsView from "../view/statistics.js";
 import PointPresenter from "./point.js";
 import NewPointPresenter from "./new-point.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
-import {FilterType, SortType, UpdateType, UserAction} from "../const.js";
+import {FilterType, SortType, UpdateType, UserAction, MenuItem} from "../const.js";
 import {sortByDate, sortByTime, sortByPrice} from "../utils/sort.js";
 import {filter} from "../utils/filter.js";
 
@@ -31,9 +32,7 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleNewButtonClick = this._handleNewButtonClick.bind(this);
-
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
 
     this._newPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction);
   }
@@ -41,16 +40,25 @@ export default class Trip {
   init() {
     this._tripInfoComponent = new TripInfoView(this._getPoints());
     this._siteMenuComponent = new SiteMenuView();
+    this._statsComponent = new StatisticsView(this._pointsModel.getPoints());
     this._newButtonComponent.setNewButtonClickHandler(this._handleNewButtonClick);
+    this._siteMenuComponent.setMenuClickHandler(this._handleSiteMenuClick);
+
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderNewButton();
     this._renderTrip();
   }
 
-  _handleNewButtonClick() {
+  destroy() {
+    this._newPointPresenter.destroy();
+    this._clearPointsList();
+    remove(this._tripSortComponent);
     this._currentSortType = SortType.DEFAULT;
-    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._newButtonComponent.getElement().disabled = true;
-    this._newPointPresenter.init();
+
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   _getPoints() {
@@ -110,25 +118,8 @@ export default class Trip {
     this._getPoints().forEach((point) => this._renderPoint(point));
   }
 
-  _clearPointsList() {
-    Object
-      .values(this._pointPresenter)
-      .forEach((presenter) => presenter.destroy());
-    this._pointPresenter = {};
-  }
-
   _renderListEmpty() {
     render(tripEventsContainer, this._listEmptyComponent, RenderPosition.AFTERBEGIN);
-  }
-
-  _clearTrip() {
-    this._newPointPresenter.destroy();
-    this._clearPointsList();
-    remove(this._siteMenuComponent);
-    remove(this._tripInfoComponent);
-    remove(this._tripSortComponent);
-    remove(this._tripListComponent);
-    this._currentSortType = SortType.DEFAULT;
   }
 
   _renderTrip() {
@@ -147,6 +138,23 @@ export default class Trip {
     this._renderPoints();
   }
 
+  _clearPointsList() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._pointPresenter = {};
+  }
+
+  _clearTrip() {
+    this._newPointPresenter.destroy();
+    this._clearPointsList();
+    remove(this._siteMenuComponent);
+    remove(this._tripInfoComponent);
+    remove(this._tripSortComponent);
+    remove(this._tripListComponent);
+    this._currentSortType = SortType.DEFAULT;
+  }
+
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
@@ -158,6 +166,9 @@ export default class Trip {
         break;
       case UserAction.DELETE_POINT:
         this._pointsModel.deletePoint(updateType, update);
+        break;
+      case UserAction.CANCEL_ADD_POINT:
+        this._newButtonComponent.getElement().disabled = false;
         break;
     }
   }
@@ -173,7 +184,8 @@ export default class Trip {
         break;
       case UpdateType.MAJOR:
         this._clearTrip();
-        this._renderTrip();
+        this.destroy();
+        this.init();
         break;
     }
   }
@@ -192,5 +204,32 @@ export default class Trip {
     this._currentSortType = sortType;
     this._clearPointsList();
     this._renderPoints();
+  }
+
+  _handleNewButtonClick() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    if (this._siteMenuComponent.getActiveMenuItem() === MenuItem.STATS) {
+      this._handleSiteMenuClick(MenuItem.TABLE);
+    }
+    this._newButtonComponent.getElement().disabled = true;
+    this._newPointPresenter.init();
+  }
+
+  _handleSiteMenuClick(menuItem) {
+    switch (menuItem) {
+      case MenuItem.TABLE:
+        remove(this._statsComponent);
+        this._siteMenuComponent.setMenuItem(MenuItem.TABLE);
+        this._clearTrip();
+        this.init();
+        break;
+      case MenuItem.STATS:
+        this._siteMenuComponent.setMenuItem(MenuItem.STATS);
+        this.destroy();
+        this._statsComponent = new StatisticsView(this._pointsModel.getPoints());
+        render(tripEventsContainer, this._statsComponent, RenderPosition.BEFOREEND);
+        break;
+    }
   }
 }
