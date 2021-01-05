@@ -27,14 +27,15 @@ export default class Point {
     this._handleDeleteBtnClick = this._handleDeleteBtnClick.bind(this);
   }
 
-  init(point) {
+  init(point, destinationsModel) {
     this._point = point;
+    this._destinationsModel = destinationsModel;
 
     const prevPointComponent = this._pointComponent;
     const prevPointEditComponent = this._pointEditComponent;
 
     this._pointComponent = new TripPointView(point);
-    this._pointEditComponent = new TripEditPointView(point);
+    this._pointEditComponent = new TripEditPointView(point, this._destinationsModel.getDestinations());
 
     this._pointComponent.setRollupBtnClickHandler(this._handleArrowDownClick);
     this._pointComponent.setFavoriteBtnClickHandler(this._handleFavoriteBtnClick);

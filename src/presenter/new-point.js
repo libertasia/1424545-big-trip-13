@@ -1,5 +1,5 @@
 import TripEditPointView from "../view/trip-edit-point.js";
-import {generateId} from "../mock/point.js";
+import {generateId} from "../utils/common.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 
@@ -15,11 +15,12 @@ export default class NewPoint {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init() {
+  init(destinationsModel) {
     if (this._pointEditComponent !== null) {
       return;
     }
 
+    this._destinationsModel = destinationsModel;
     this._pointEditComponent = new TripEditPointView(null);
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditComponent.setDeleteBtnClickHandler(this._handleCancelClick);

@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import he from "he";
-import {DESTINATIONS, OFFERS} from "../mock/point.js";
+import {OFFERS} from "../mock/point.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
@@ -41,9 +41,9 @@ const createOffersTemplate = (offers, selectedOffers) => {
   `;
 };
 
-const createPhotoTemplate = (imgPath) => {
+const createPhotoTemplate = (pic) => {
   return `
-    <img class="event__photo" src="${imgPath}" alt="Event photo">
+    <img class="event__photo" src="${pic.src}" alt="${pic.description}">
   `;
 };
 
@@ -51,10 +51,10 @@ const createDestinationTemplate = (destination) => {
   if (destination === null) {
     return ``;
   }
-  if (!destination.description && (destination.photos === null || destination.photos.length === 0)) {
+  if (!destination.description && (destination.pictures === null || destination.pictures.length === 0)) {
     return ``;
   }
-  const photosMarkup = destination.photos.map((element) => createPhotoTemplate(element)).join(``);
+  const photosMarkup = destination.pictures.map((element) => createPhotoTemplate(element)).join(``);
   return `
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -80,7 +80,7 @@ const createButtonsTemplate = (isNew, destinationSelected = false) => {
     </button>`;
 };
 
-const createEditPointTemplate = (data) => {
+const createEditPointTemplate = (data, destinations) => {
   const {type, destination, price, startTime, endTime, offers, isNew} = data;
 
   const destinationName = destination === null ? `` : destination.name;
@@ -88,7 +88,7 @@ const createEditPointTemplate = (data) => {
   const eventStartTime = startTime === null ? `` : dayjs(startTime).format(`DD/MM/YY HH:mm`);
   const eventEndTime = endTime === null ? `` : dayjs(endTime).format(`DD/MM/YY HH:mm`);
 
-  const destinationsMarkup = DESTINATIONS.map((element) => createDestinationElementTemplate(element)).join(``);
+  const destinationsMarkup = destinations.map((element) => createDestinationElementTemplate(element)).join(``);
   const availableOffers = type === null ? [] : OFFERS.filter((o) => o.type.toLowerCase() === data.type.toLowerCase());
   const offersSectionMarkup = createOffersTemplate(availableOffers, offers);
   const destinationSectionMarkup = createDestinationTemplate(destination);
@@ -200,9 +200,10 @@ const createEditPointTemplate = (data) => {
 };
 
 export default class TripEditPoint extends SmartView {
-  constructor(point) {
+  constructor(point, destinations) {
     super();
     this._data = TripEditPoint.parsePointToData(point);
+    this._destinations = destinations;
     this._datepickerStart = null;
     this._datepickerEnd = null;
 
@@ -234,7 +235,7 @@ export default class TripEditPoint extends SmartView {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._data);
+    return createEditPointTemplate(this._data, this._destinations);
   }
 
   reset(point) {
@@ -303,7 +304,7 @@ export default class TripEditPoint extends SmartView {
   }
 
   _getDestinationByName(name) {
-    return DESTINATIONS.find((element) => element.name === name);
+    return this._destinations.find((element) => element.name === name);
   }
 
   _destinationToggleHandler(evt) {
