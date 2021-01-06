@@ -15,13 +15,14 @@ export default class NewPoint {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(destinationsModel) {
+  init(destinationsModel, offersModel) {
     if (this._pointEditComponent !== null) {
       return;
     }
 
     this._destinationsModel = destinationsModel;
-    this._pointEditComponent = new TripEditPointView(null);
+    this._offersModel = offersModel;
+    this._pointEditComponent = new TripEditPointView(null, this._destinationsModel.getDestinations(), this._offersModel.getAllOffers());
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditComponent.setDeleteBtnClickHandler(this._handleCancelClick);
 

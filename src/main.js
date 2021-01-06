@@ -1,6 +1,7 @@
 import TripPresenter from "./presenter/trip.js";
 import PointsModel from "./model/points.js";
 import DestinationsModel from "./model/destinations.js";
+import OffersModel from "./model/offers.js";
 import FilterModel from "./model/filter.js";
 import FilterPresenter from "./presenter/filter.js";
 import Api from "./api.js";
@@ -19,21 +20,32 @@ const filterModel = new FilterModel();
 const pointsModel = new PointsModel();
 api.getPoints()
   .then((points) => {
-    console.log("received points, sending INIT");
     pointsModel.setPoints(UpdateType.INIT, points);
   })
-  .catch((e) => {
-    console.log(`catch, sending INIT. ${e}`);
+  .catch(() => {
     pointsModel.setPoints(UpdateType.INIT, []);
   });
 
 const destinationsModel = new DestinationsModel();
-api.getDestinations().then((destinations) => {
-  destinationsModel.setDestinations(UpdateType.INIT, destinations);
-});
+api.getDestinations()
+  .then((destinations) => {
+    destinationsModel.setDestinations(UpdateType.INIT_DESTINATIONS, destinations);
+  })
+  .catch(() => {
+    destinationsModel.setDestinations(UpdateType.INIT_DESTINATIONS, []);
+  });
 
-const tripPresenter = new TripPresenter(tripMainContainer, pointsModel, filterModel, destinationsModel);
-const filterPresenter = new FilterPresenter(tripMenuContainer, filterModel, pointsModel);
+const offersModel = new OffersModel();
+api.getOffers()
+  .then((offers) => {
+    offersModel.setOffers(UpdateType.INIT_OFFERS, offers);
+  })
+  .catch(() => {
+    offersModel.setOffers(UpdateType.INIT_OFFERS, []);
+  });
+
+const tripPresenter = new TripPresenter(tripMainContainer, pointsModel, filterModel, destinationsModel, offersModel, api);
+const filterPresenter = new FilterPresenter(tripMenuContainer, filterModel, pointsModel, offersModel, destinationsModel);
 
 filterPresenter.init();
 tripPresenter.init();

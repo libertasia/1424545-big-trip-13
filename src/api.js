@@ -1,5 +1,4 @@
 import PointsModel from "./model/points.js";
-import DestinationsModel from "./model/destinations.js";
 
 const Method = {
   GET: `GET`,
@@ -30,15 +29,14 @@ export default class Api {
 
   getOffers() {
     return this._load({url: `offers`})
-      .then(Api.toJSON)
-      .then((offers) => offers.map(OffersModel.adaptToClient));
+      .then(Api.toJSON);
   }
 
   updatePoint(point) {
     return this._load({
       url: `points/${point.id}`,
       method: Method.PUT,
-      body: JSON.stringify(point),
+      body: JSON.stringify(PointsModel.adaptToServer(point)),
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then(Api.toJSON)

@@ -27,15 +27,16 @@ export default class Point {
     this._handleDeleteBtnClick = this._handleDeleteBtnClick.bind(this);
   }
 
-  init(point, destinationsModel) {
+  init(point, destinationsModel, offersModel) {
     this._point = point;
     this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
 
     const prevPointComponent = this._pointComponent;
     const prevPointEditComponent = this._pointEditComponent;
 
     this._pointComponent = new TripPointView(point);
-    this._pointEditComponent = new TripEditPointView(point, this._destinationsModel.getDestinations());
+    this._pointEditComponent = new TripEditPointView(point, this._destinationsModel.getDestinations(), this._offersModel.getAllOffers());
 
     this._pointComponent.setRollupBtnClickHandler(this._handleArrowDownClick);
     this._pointComponent.setFavoriteBtnClickHandler(this._handleFavoriteBtnClick);
@@ -107,7 +108,8 @@ export default class Point {
     for (let i = 0; i < offers1.length; i++) {
       let isInOffers2 = false;
       for (let j = 0; j < offers2.length; j++) {
-        if (offers1[i].id === offers2[j].id) {
+        if (offers1[i].title === offers2[j].title &&
+            offers1[i].price === offers2[j].price) {
           isInOffers2 = true;
           break;
         }
