@@ -1,5 +1,4 @@
 import TripEditPointView from "../view/trip-edit-point.js";
-import {generateId} from "../utils/common.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 
@@ -46,9 +45,7 @@ export default class NewPoint {
     this._changeData(
         UserAction.ADD_POINT,
         UpdateType.MAJOR,
-        // Пока у нас нет сервера, который бы после сохранения
-        // выдывал честный id точки, нам нужно позаботиться об этом самим
-        Object.assign({id: generateId()}, point)
+        point
     );
     this.destroy();
   }
