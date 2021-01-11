@@ -5,6 +5,8 @@ import TripListView from "../view/trip-list.js";
 import ListEmptyView from "../view/list-empty.js";
 import NewButtonView from "../view/new-button.js";
 import StatisticsView from "../view/statistics.js";
+import LoadingView from "../view/loading.js";
+import LoadingErrorView from "../view/loading-error.js";
 import PointPresenter from "./point.js";
 import NewPointPresenter from "./new-point.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
@@ -16,17 +18,26 @@ const tripEventsContainer = document.querySelector(`.trip-events`);
 const tripMenuContainer = document.querySelector(`.trip-main__trip-controls`);
 
 export default class Trip {
-  constructor(tripContainer, pointsModel, filterModel) {
+  constructor(tripContainer, pointsModel, filterModel, destinationsModel, offersModel, api) {
     this._tripContainer = tripContainer;
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
     this._pointPresenter = {};
     this._currentSortType = SortType.DEFAULT;
+    this._isPointsLoading = true;
+    this._isDestinationsLoading = true;
+    this._isOffersLoading = true;
+    this._api = api;
 
     this._listEmptyComponent = new ListEmptyView();
     this._tripSortComponent = new TripSortView();
     this._tripListComponent = new TripListView();
     this._newButtonComponent = new NewButtonView();
+    this._loadingComponent = new LoadingView();
+    this._loadingErrorComponent = new LoadingErrorView();
+
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
@@ -45,10 +56,9 @@ export default class Trip {
     this._siteMenuComponent.setMenuClickHandler(this._handleSiteMenuClick);
 
     this._pointsModel.addObserver(this._handleModelEvent);
+    this._destinationsModel.addObserver(this._handleModelEvent);
+    this._offersModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
-
-    this._renderNewButton();
-    this._renderTrip();
   }
 
   destroy() {
@@ -58,6 +68,8 @@ export default class Trip {
     this._currentSortType = SortType.DEFAULT;
 
     this._pointsModel.removeObserver(this._handleModelEvent);
+    this._destinationsModel.removeObserver(this._handleModelEvent);
+    this._offersModel.removeObserver(this._handleModelEvent);
     this._filterModel.removeObserver(this._handleModelEvent);
   }
 
@@ -110,7 +122,7 @@ export default class Trip {
 
   _renderPoint(point) {
     const pointPresenter = new PointPresenter(this._tripListComponent, this._handleViewAction, this._handleModeChange);
-    pointPresenter.init(point);
+    pointPresenter.init(point, this._destinationsModel, this._offersModel);
     this._pointPresenter[point.id] = pointPresenter;
   }
 
@@ -122,11 +134,34 @@ export default class Trip {
     render(tripEventsContainer, this._listEmptyComponent, RenderPosition.AFTERBEGIN);
   }
 
+  _renderLoading() {
+    render(tripEventsContainer, this._loadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
+  _renderLoadingError() {
+    render(tripEventsContainer, this._loadingErrorComponent, RenderPosition.AFTERBEGIN);
+  }
+
   _renderTrip() {
+    if (this._isPointsLoading || this._isOffersLoading || this._isDestinationsLoading) {
+      this._renderLoading();
+      return;
+    }
+
+    remove(this._loadingComponent);
+
+    if (this._destinationsModel.getDestinations().length === 0 ||
+        this._offersModel.getAllOffers().length === 0) {
+      this._renderLoadingError();
+      return;
+    }
+
     this._renderSiteMenu();
+    this._renderNewButton();
 
     if (this._getPoints().length === 0) {
       this._renderListEmpty();
+      this._renderList();
       return;
     }
     this._renderTripInfo();
@@ -158,7 +193,10 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this._pointsModel.updatePoint(updateType, update);
+        this._api.updatePoint(update)
+          .then((response) => {
+            this._pointsModel.updatePoint(updateType, response);
+          });
         break;
       case UserAction.ADD_POINT:
         this._newButtonComponent.getElement().disabled = false;
@@ -169,6 +207,9 @@ export default class Trip {
         break;
       case UserAction.CANCEL_ADD_POINT:
         this._newButtonComponent.getElement().disabled = false;
+        if (this._pointsModel.getPoints().length === 0) {
+          this._renderListEmpty();
+        }
         break;
     }
   }
@@ -176,7 +217,7 @@ export default class Trip {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._pointPresenter[data.id].init(data);
+        this._pointPresenter[data.id].init(data, this._destinationsModel, this._offersModel);
         break;
       case UpdateType.MINOR:
         this._clearPointsList();
@@ -186,7 +227,19 @@ export default class Trip {
         this._clearTrip();
         this.destroy();
         this.init();
+        this._renderTrip();
         break;
+      case UpdateType.INIT:
+        this._isPointsLoading = false;
+        this._renderTrip();
+        break;
+      case UpdateType.INIT_DESTINATIONS:
+        this._isDestinationsLoading = false;
+        this._renderTrip();
+        break;
+      case UpdateType.INIT_OFFERS:
+        this._isOffersLoading = false;
+        this._renderTrip();
     }
   }
 
@@ -213,7 +266,8 @@ export default class Trip {
       this._handleSiteMenuClick(MenuItem.TABLE);
     }
     this._newButtonComponent.getElement().disabled = true;
-    this._newPointPresenter.init();
+    remove(this._listEmptyComponent);
+    this._newPointPresenter.init(this._destinationsModel, this._offersModel);
   }
 
   _handleSiteMenuClick(menuItem) {
@@ -223,6 +277,7 @@ export default class Trip {
         this._siteMenuComponent.setMenuItem(MenuItem.TABLE);
         this._clearTrip();
         this.init();
+        this._renderTrip();
         break;
       case MenuItem.STATS:
         this._siteMenuComponent.setMenuItem(MenuItem.STATS);
