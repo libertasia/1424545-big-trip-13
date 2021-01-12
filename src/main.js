@@ -4,7 +4,7 @@ import DestinationsModel from "./model/destinations.js";
 import OffersModel from "./model/offers.js";
 import FilterModel from "./model/filter.js";
 import FilterPresenter from "./presenter/filter.js";
-import Api from "./api.js";
+import Api from "./api/api.js";
 import {UpdateType} from "./const.js";
 
 const AUTHORIZATION = `Basic vhz0YftSgpDVoqPot`;
