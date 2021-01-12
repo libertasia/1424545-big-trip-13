@@ -49,3 +49,7 @@ const filterPresenter = new FilterPresenter(tripMenuContainer, filterModel, poin
 
 filterPresenter.init();
 tripPresenter.init();
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`./service-worker.js`);
+});
