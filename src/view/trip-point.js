@@ -23,12 +23,12 @@ const getEventDuration = (startTime, endTime) => {
 };
 
 const createOfferTemplate = (offer) => {
-  return `
-  <li class="event__offer">
+  return `<li class="event__offer">
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
-  </li>`;
+  </li>
+  `;
 };
 
 const createTripPointTemplate = (point) => {
@@ -47,8 +47,7 @@ const createTripPointTemplate = (point) => {
     `event__favorite-btn event__favorite-btn--active` :
     `event__favorite-btn`;
 
-  return `
-    <li class="trip-events__item">
+  return `<li class="trip-events__item">
       <div class="event">
         <time class="event__date" datetime="${startTime.toISOString()}">${date}</time>
         <div class="event__type">

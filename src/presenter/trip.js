@@ -13,6 +13,8 @@ import {remove, render, RenderPosition} from "../utils/render.js";
 import {FilterType, SortType, UpdateType, UserAction, MenuItem} from "../const.js";
 import {sortByDate, sortByTime, sortByPrice} from "../utils/sort.js";
 import {filter} from "../utils/filter.js";
+import {isOnline} from "../utils/common.js";
+import {toast} from "../utils/toast/toast.js";
 
 const tripEventsContainer = document.querySelector(`.trip-events`);
 const tripMenuContainer = document.querySelector(`.trip-main__trip-controls`);
@@ -279,6 +281,11 @@ export default class Trip {
   }
 
   _handleNewButtonClick() {
+    if (!isOnline()) {
+      toast(`You can't create new point offline`);
+      return;
+    }
+
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     if (this._siteMenuComponent.getActiveMenuItem() === MenuItem.STATS) {
