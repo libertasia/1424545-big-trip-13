@@ -1,8 +1,8 @@
-import TripPresenter from "./presenter/trip.js";
 import PointsModel from "./model/points.js";
 import DestinationsModel from "./model/destinations.js";
 import OffersModel from "./model/offers.js";
 import FilterModel from "./model/filter.js";
+import TripPresenter from "./presenter/trip.js";
 import FilterPresenter from "./presenter/filter.js";
 import Api from "./api/api.js";
 import {UpdateType} from "./const.js";
@@ -41,6 +41,7 @@ apiWithProvider.getPoints()
   });
 
 const destinationsModel = new DestinationsModel();
+
 apiWithProvider.getDestinations()
   .then((destinations) => {
     destinationsModel.setDestinations(UpdateType.INIT_DESTINATIONS, destinations);
@@ -50,6 +51,7 @@ apiWithProvider.getDestinations()
   });
 
 const offersModel = new OffersModel();
+
 apiWithProvider.getOffers()
   .then((offers) => {
     offersModel.setOffers(UpdateType.INIT_OFFERS, offers);
