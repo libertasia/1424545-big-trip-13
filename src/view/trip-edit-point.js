@@ -30,7 +30,7 @@ const createOffersTemplate = (offers, selectedOffers, isDisabled) => {
   if (offers === null || offers.length === 0) {
     return ``;
   }
-  let offersMarkup = offers.map(
+  const offersMarkup = offers.map(
       (element) => createOfferItemTemplate(
           element,
           selectedOffers.some((selectedOffer) => selectedOffer.title === element.title && selectedOffer.price === element.price),
@@ -288,7 +288,7 @@ export default class TripEditPoint extends SmartView {
         isSaving: false,
       };
     }
-    let data = Object.assign(
+    const data = Object.assign(
         {},
         point,
         {
@@ -303,7 +303,7 @@ export default class TripEditPoint extends SmartView {
   }
 
   static parseDataToPoint(data) {
-    let point = Object.assign({}, data);
+    const point = Object.assign({}, data);
     if (point.isNew) {
       point.isFavorite = false;
     }
@@ -442,7 +442,7 @@ export default class TripEditPoint extends SmartView {
   }
 
   _startTimeChangeHandler([userDate]) {
-    let newDate = dayjs(userDate);
+    const newDate = dayjs(userDate);
     if (newDate.isAfter(this._data.endTime)) {
       this._data.endTime = newDate;
     }
