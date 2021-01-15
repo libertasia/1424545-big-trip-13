@@ -8,6 +8,7 @@ const getChartLabels = (points) => {
       labels.push(key);
     }
   });
+
   return labels.sort();
 };
 
@@ -17,6 +18,7 @@ const calculateCostByPointType = (points) => {
   points.forEach((point) => {
     costs.set(point.type, costs.get(point.type) + point.price);
   });
+
   return costs;
 };
 
@@ -26,6 +28,7 @@ const calculateCountByPointType = (points) => {
   points.forEach((point) => {
     counts.set(point.type, counts.get(point.type) + 1);
   });
+
   return counts;
 };
 
@@ -36,6 +39,7 @@ const calculateTimeByPointType = (points) => {
     const durationInMinutes = point.endTime.diff(point.startTime, `minute`);
     times.set(point.type, times.get(point.type) + durationInMinutes);
   });
+
   return times;
 };
 

@@ -1,8 +1,9 @@
 import TripPointView from "../view/trip-point.js";
 import TripEditPointView from "../view/trip-edit-point.js";
-import {render, RenderPosition, replace, remove} from "../utils/render.js";
-import {isDatesEqual} from "../utils/common.js";
 import {UserAction, UpdateType} from "../const.js";
+import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {isDatesEqual, isOnline} from "../utils/common.js";
+import {toast} from "../utils/toast/toast.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -91,10 +92,12 @@ export default class Point {
 
     switch (state) {
       case State.SAVING:
-        this._pointEditComponent.updateData({
-          isDisabled: true,
-          isSaving: true
-        });
+        if (this._mode === Mode.EDITING) {
+          this._pointEditComponent.updateData({
+            isDisabled: true,
+            isSaving: true
+          });
+        }
         break;
       case State.DELETING:
         this._pointEditComponent.updateData({
@@ -131,6 +134,12 @@ export default class Point {
   }
 
   _handleArrowDownClick() {
+    if (!isOnline()) {
+      toast(`You can't edit point offline`);
+      this.setViewState(State.ABORTING);
+      return;
+    }
+
     this._replaceCardToForm();
   }
 
@@ -158,11 +167,18 @@ export default class Point {
   }
 
   _handleFormSubmit(update) {
+    if (!isOnline()) {
+      toast(`You can't save point offline`);
+      this.setViewState(State.ABORTING);
+      return;
+    }
+
     const isMajorUpdate =
       !isDatesEqual(this._point.startTime, update.startTime) ||
       this._point.price !== update.price ||
       this._point.destination.name !== update.destination.name ||
       !this._isOffersEqual(this._point.offers, update.offers);
+
     this._changeData(
         UserAction.UPDATE_POINT,
         isMajorUpdate ? UpdateType.MAJOR : UpdateType.PATCH,
@@ -171,6 +187,12 @@ export default class Point {
   }
 
   _handleDeleteBtnClick(point) {
+    if (!isOnline()) {
+      toast(`You can't delete point offline`);
+      this.setViewState(State.ABORTING);
+      return;
+    }
+
     this._changeData(
         UserAction.DELETE_POINT,
         UpdateType.MAJOR,
