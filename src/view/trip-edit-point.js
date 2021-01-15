@@ -4,6 +4,11 @@ import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
+const DATETIME_FORMAT = `DD/MM/YY HH:mm`;
+const DEFAULT_POINT_TYPE = `flight`;
+const DATEPICKER_FORMAT = `d/m/y H:i`;
+const DATEPICKER_DEFAULT_DATE = `today`;
+
 const createDestinationElementTemplate = (element) => {
   return `<option value="${element.name}"></option>`;
 };
@@ -92,8 +97,8 @@ const createEditPointTemplate = (data, destinations, allOffers) => {
 
   const destinationName = destination === null ? `` : destination.name;
 
-  const eventStartTime = startTime === null ? `` : dayjs(startTime).format(`DD/MM/YY HH:mm`);
-  const eventEndTime = endTime === null ? `` : dayjs(endTime).format(`DD/MM/YY HH:mm`);
+  const eventStartTime = startTime === null ? `` : dayjs(startTime).format(DATETIME_FORMAT);
+  const eventEndTime = endTime === null ? `` : dayjs(endTime).format(DATETIME_FORMAT);
 
   const destinationsMarkup = destinations.map((element) => createDestinationElementTemplate(element)).join(``);
   const availableOffers = allOffers.find((element) => element.type === type.toLowerCase()).offers;
@@ -277,7 +282,7 @@ export default class TripEditPoint extends SmartView {
   static parsePointToData(point) {
     if (point === null) {
       return {
-        type: `flight`,
+        type: DEFAULT_POINT_TYPE,
         destination: null,
         price: 0,
         startTime: dayjs(),
@@ -423,18 +428,18 @@ export default class TripEditPoint extends SmartView {
     this._datepickerStart = flatpickr(
         this.getElement().querySelector(`#event-start-time-1`),
         {
-          dateFormat: `d/m/y H:i`,
+          dateFormat: DATEPICKER_FORMAT,
           enableTime: true,
-          default: `today`,
+          default: DATEPICKER_DEFAULT_DATE,
           onChange: this._startTimeChangeHandler
         }
     );
     this._datepickerEnd = flatpickr(
         this.getElement().querySelector(`#event-end-time-1`),
         {
-          dateFormat: `d/m/y H:i`,
+          dateFormat: DATEPICKER_FORMAT,
           enableTime: true,
-          default: `today`,
+          default: DATEPICKER_DEFAULT_DATE,
           minDate: this._data.startTime.toDate(),
           onChange: this._endTimeChangeHandler
         }
