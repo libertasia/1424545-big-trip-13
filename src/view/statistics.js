@@ -3,88 +3,24 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from "./smart.js";
 import {getChartLabels, calculateCostByPointType, calculateCountByPointType, calculateTimeByPointType} from "../utils/stats.js";
 
-const MINUTES_PER_DAY = 1440;
 const BAR_HEIGHT = 55;
 
-const renderMoneyChart = (ctx, points) => {
-  const chartLabels = getChartLabels(points);
-  const costs = calculateCostByPointType(points);
-  return new Chart(ctx, {
-    plugins: [ChartDataLabels],
-    type: `horizontalBar`,
-    data: {
-      labels: chartLabels,
-      datasets: [{
-        data: chartLabels.map((t) => costs.get(t)),
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
-      }]
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13
-          },
-          color: `#000000`,
-          anchor: `end`,
-          align: `start`,
-          formatter: (val) => `€ ${val}`
-        }
-      },
-      title: {
-        display: true,
-        text: `MONEY`,
-        fontColor: `#000000`,
-        fontSize: 23,
-        position: `left`
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: `#000000`,
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          minBarLength: 50
-        }],
-      },
-      legend: {
-        display: false
-      },
-      tooltips: {
-        enabled: false,
-      }
-    }
-  });
+const ChartTitles = {
+  TIME: `Time-Spend`,
+  MONEY: `Money`,
+  TYPE: `Type`
 };
 
-const renderTypeChart = (ctx, points) => {
+const renderChart = (ctx, points, title, formatter, dataFunc) => {
   const chartLabels = getChartLabels(points);
-  const counts = calculateCountByPointType(points);
+  const dataMap = dataFunc(points);
   return new Chart(ctx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
       labels: chartLabels,
       datasets: [{
-        data: chartLabels.map((t) => counts.get(t)),
+        data: chartLabels.map((t) => dataMap.get(t)),
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
         anchor: `start`
@@ -99,81 +35,12 @@ const renderTypeChart = (ctx, points) => {
           color: `#000000`,
           anchor: `end`,
           align: `start`,
-          formatter: (val) => `${val}x`
+          formatter
         }
       },
       title: {
         display: true,
-        text: `TYPE`,
-        fontColor: `#000000`,
-        fontSize: 23,
-        position: `left`
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: `#000000`,
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          minBarLength: 50
-        }],
-      },
-      legend: {
-        display: false
-      },
-      tooltips: {
-        enabled: false,
-      }
-    }
-  });
-};
-
-const renderTimeChart = (ctx, points) => {
-  const chartLabels = getChartLabels(points);
-  const times = calculateTimeByPointType(points);
-  return new Chart(ctx, {
-    plugins: [ChartDataLabels],
-    type: `horizontalBar`,
-    data: {
-      labels: chartLabels,
-      datasets: [{
-        data: chartLabels.map((t) => Math.round(times.get(t) / MINUTES_PER_DAY)),
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
-      }]
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13
-          },
-          color: `#000000`,
-          anchor: `end`,
-          align: `start`,
-          formatter: (val) => `${val}D`
-        }
-      },
-      title: {
-        display: true,
-        text: `TYPE`,
+        text: title,
         fontColor: `#000000`,
         fontSize: 23,
         position: `left`
@@ -282,8 +149,8 @@ export default class Statistics extends SmartView {
     typeCtx.height = BAR_HEIGHT * barsCount;
     timeCtx.height = BAR_HEIGHT * barsCount;
 
-    this._moneyChart = renderMoneyChart(moneyCtx, points);
-    this._typeChart = renderTypeChart(typeCtx, points);
-    this._timeChart = renderTimeChart(timeCtx, points);
+    this._moneyChart = renderChart(moneyCtx, points, ChartTitles.MONEY, (val) => `€ ${val}`, calculateCostByPointType);
+    this._typeChart = renderChart(typeCtx, points, ChartTitles.TYPE, (val) => `${val}x`, calculateCountByPointType);
+    this._timeChart = renderChart(timeCtx, points, ChartTitles.TIME, (val) => `${val}D`, calculateTimeByPointType);
   }
 }
