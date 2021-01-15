@@ -113,7 +113,7 @@ export default class Trip {
       this._tripSortComponent = null;
     }
 
-    this._tripSortComponent = new TripSortView();
+    this._tripSortComponent = new TripSortView(this._currentSortType);
     this._tripSortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
     render(tripEventsContainer, this._tripSortComponent, RenderPosition.AFTERBEGIN);
   }
@@ -182,14 +182,16 @@ export default class Trip {
     this._pointPresenter = {};
   }
 
-  _clearTrip() {
+  _clearTrip(resetSort = false) {
     this._newPointPresenter.destroy();
     this._clearPointsList();
     remove(this._siteMenuComponent);
     remove(this._tripInfoComponent);
     remove(this._tripSortComponent);
     remove(this._tripListComponent);
-    this._currentSortType = SortType.DEFAULT;
+    if (resetSort) {
+      this._currentSortType = SortType.DEFAULT;
+    }
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -244,10 +246,14 @@ export default class Trip {
         this._clearPointsList();
         this._renderPoints();
         break;
+      case UpdateType.MEDIUM:
+        this._clearTrip(false);
+        this._renderTrip();
+        break;
       case UpdateType.MAJOR:
-        this._clearTrip();
-        this.destroy();
-        this.init();
+        this._clearTrip(true);
+        // this.destroy();
+        // this.init();
         this._renderTrip();
         break;
       case UpdateType.INIT:
@@ -301,7 +307,7 @@ export default class Trip {
       case MenuItem.TABLE:
         remove(this._statsComponent);
         this._siteMenuComponent.setMenuItem(MenuItem.TABLE);
-        this._clearTrip();
+        this._clearTrip(true);
         this.init();
         this._renderTrip();
         break;

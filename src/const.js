@@ -27,6 +27,7 @@ const UserAction = {
 const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
+  MEDIUM: `MEDIUM`,
   MAJOR: `MAJOR`,
   INIT: `INIT`,
   INIT_DESTINATIONS: `INIT_DESTINATIONS`,
