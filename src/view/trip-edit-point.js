@@ -323,7 +323,7 @@ export default class TripEditPoint extends SmartView {
     if (!evt.target.validity.valid) {
       this.updateData({
         price: 0
-      }, false);
+      }, true);
     } else {
       let priceStr = evt.target.value;
       if (priceStr === ``) {
@@ -331,7 +331,7 @@ export default class TripEditPoint extends SmartView {
       }
       this.updateData({
         price: parseInt(priceStr, 10)
-      }, false);
+      }, true);
     }
   }
 
