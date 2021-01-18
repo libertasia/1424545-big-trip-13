@@ -173,7 +173,7 @@ export default class Point {
       return;
     }
 
-    const isPatchUpdate =
+    const isMinorUpdate =
       isDatesEqual(this._point.startTime, update.startTime) &&
       this._point.price === update.price &&
       this._point.destination.name === update.destination.name &&
@@ -181,7 +181,7 @@ export default class Point {
 
     this._changeData(
         UserAction.UPDATE_POINT,
-        isPatchUpdate ? UpdateType.PATCH : UpdateType.MEDIUM,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.MEDIUM,
         update
     );
   }
