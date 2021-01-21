@@ -320,7 +320,7 @@ const generatePhotos = (count) => {
   const photos = [];
   let photoPath = ``;
   for (let i = 0; i < count; i++) {
-    photoPath = `http://picsum.photos/248/152?r=${Math.random()}`;
+    photoPath = `https://picsum.photos/248/152?r=${Math.random()}`;
     photos.push(photoPath);
   }
   return photos;
